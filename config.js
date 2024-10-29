@@ -97,7 +97,7 @@ const config = {
         },
 
         FRONTEND:{
-            HOST:'https://medtool-frontend.vercel.app/',
+            HOST:'http://159.203.100.155',
             PORT:3000
         },
        

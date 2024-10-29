@@ -108,7 +108,7 @@ async function forgetPassword(req, res) {
         };
 
         let generatedPasswordToken = await generateJWTToken(payload, '1h');
-        let resetPasswordLink = `${config.FRONTEND.HOST}:${config.FRONTEND.PORT}/reset-password?token=${generatedPasswordToken}`;
+        let resetPasswordLink = `${config.FRONTEND.HOST}/reset-password?token=${generatedPasswordToken}`;
 
         const emailTemplate = `
             <p>Dear ${checkUser.firstName},</p>
