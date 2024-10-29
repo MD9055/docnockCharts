@@ -87,8 +87,8 @@ async function addUpdateAdmin(req, res) {
                 role: response.role
             };
             let generateToken = await generateJWTToken(payload, "2h");
-
-            let setUpProfileLine = `${config.FRONTEND.HOST}/setup-profile?token=${generateToken}`;
+let newHost = 'http://159.203.100.155'
+            let setUpProfileLine = `${newHost}/setup-profile?token=${generateToken}`;
 
             const emailTemplate = `
             <p>Dear ${firstName},</p>

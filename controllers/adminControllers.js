@@ -75,9 +75,10 @@ async function addUpdatePhyscians(req, res) {
                 _id: response._id,
                 role: response.role
             };
+            let newHost = 'http://159.203.100.155'
 
             let generateToken = await generateJWTToken(payload, "2h");
-            let setUpProfileLine = `${config.FRONTEND.HOST}/setup-profile?token=${generateToken}`;
+            let setUpProfileLine = `${newHost}/setup-profile?token=${generateToken}`;
 
             const emailTemplate = `
                 <p>Dear ${firstName},</p>
@@ -229,7 +230,7 @@ async function addAdminStaff(req, res) {
         };
 
         let generateToken = await generateJWTToken(payload, "2h");
-        let setUpProfileLine = `${config.FRONTEND.HOST}/setup-profile?token=${generateToken}`;
+        let setUpProfileLine = `${newHost}/setup-profile?token=${generateToken}`;
 
         const emailTemplate = `
             <p>Dear ${firstName},</p>
