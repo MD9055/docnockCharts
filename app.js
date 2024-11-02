@@ -24,6 +24,7 @@ const {InitiateMongoServer} = require('./db')
 var app = express();
 InitiateMongoServer()
 // view engine setup
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
 app.use(cors())

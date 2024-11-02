@@ -403,6 +403,12 @@ async function addUpdatePatients(req, res) {
         return responseHandler.responseSend(401, 'Unauthorized: User ID not found.', null);
     }
 
+    let checkUserExist = await USER.findOne({email:email.toLowerCase()});
+    if(checkUserExist){
+    return responseHandler.responseSend(200, 'User already Exist with this email', null, []);
+
+    }
+
     const physicianId = req.user.userId;
     let getAdminId;
 
@@ -655,8 +661,17 @@ async function listPatients(req, res) {
 
 
 async function addPatients(req, res) {
+    
     const responseHandler = new FunctoryFunctions(res);
     const encryptionService = new EncryptionService();
+    let imageData;
+
+
+    if (req.file !== undefined) {
+        imageData = req.file.path;
+      } else {
+        imageData = req.body.image;
+      }
 
     if (!req.user || !req.user.userId) {
         return responseHandler.responseSend(401, 'Unauthorized: User ID not found.', null);
@@ -667,6 +682,12 @@ async function addPatients(req, res) {
     let getAdminId;
 
     try {
+
+        let checkUserExist = await USER.findOne({email:email.toLowerCase()});
+        if(checkUserExist){
+        return responseHandler.responseSend(200, 'User already Exist with this email', null, []);
+
+        }
         getAdminId = await USER.findById(Mongoose.Types.ObjectId(physicianId));
 
         console.log(getAdminId)
@@ -740,6 +761,7 @@ async function addPatients(req, res) {
         country: country || undefined,
         state: state || undefined,
         city: city || undefined,
+        omrSheet: imageData
     };
 
     try {

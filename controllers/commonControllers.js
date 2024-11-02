@@ -91,11 +91,45 @@ async function deleteByID(req, res) {
     }
 }
 
+async function updateByID(req, res) {
+    const responseHandler = new FunctoryFunctions(res);
+
+    try {
+        const userId = req.body._id;
+        const updateData = req.body.updateData; // Assume updateData contains the fields to update
+
+        if (!userId) {
+            return responseHandler.responseSend(400, 'ID is required.', null);
+        }
+
+        if (!updateData) {
+            return responseHandler.responseSend(400, 'Update data is required.', null);
+        }
+
+        const result = await USER.findByIdAndUpdate(
+            userId,
+            { $set: updateData },
+            { new: true }
+        );
+
+        if (!result) {
+            return responseHandler.responseSend(404, 'User not found.', null);
+        }
+
+        return responseHandler.responseSend(200, 'Updated Successfully.', result);
+    } catch (err) {
+        console.error('Error during user update:', err);
+        return responseHandler.responseSend(500, 'Internal Server Error.', null, err.message);
+    }
+}
+
+
 
 module.exports = {
     getCountry,
     getState,
     getCity,
     getByID,
-    deleteByID
+    deleteByID,
+    updateByID
 };

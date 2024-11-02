@@ -6,6 +6,8 @@ const authMiddleware = async (req, res, next) => {
   const responseHandler = new FunctoryFunctions(res); 
 
   try {
+
+    console.log(req.headers)
     const authorization = req.headers.authorization;
  
 
@@ -14,7 +16,7 @@ const authMiddleware = async (req, res, next) => {
     }
 
     const [, token] = authorization.split(' ');
-    console.log(token)
+    console.log(token, "token")
     if (!token) {
       return responseHandler.responseSend(401, 'Access denied. No token provided.');
     }
@@ -22,6 +24,8 @@ const authMiddleware = async (req, res, next) => {
 
     const decoded = jwt.verify(token, process.env.SECRET_KEY);
 
+
+    console.log(decoded, "sdsdsd")
     req.user = {
       userId: mongoose.Types.ObjectId(decoded.userId),
       email: decoded.email,

@@ -6,6 +6,105 @@ process.env.NODE_ENV = process.env.NODE_ENV || "local"; // local
 const config = require("../config.js").get(process.env.NODE_ENV);
 const FunctoryFunctions = require('../middleware/factoryFunctions');
 
+// async function addUpdatePhyscians(req, res) {
+//     const responseHandler = new FunctoryFunctions(res); // Instantiate FunctoryFunctions
+
+//     const {
+//         firstName,
+//         lastName,
+//         email,
+//         phone,
+//         dob,
+//         addressStreet1,
+//         addressStreet2,
+//         zipCode,
+//         country,
+//         state,
+//         city,
+//         medicalLicenceNumber,
+//         medicalLicenceDate,
+//         deaNumber,
+//         deaExpiryDate,
+//         cdsNumber,
+//         cdsExpiryDate,
+//         npiNumber,
+//         _id
+//     } = req.body;
+
+//     console.log(req.body);
+
+//     try {
+//         const physicianData = {
+//             firstName,
+//             lastName,
+//             email,
+//             phone,
+//             dob: new Date(dob),
+//             address_street1: addressStreet1,
+//             address_street2: addressStreet2,
+//             zip_code: zipCode,
+//             country,
+//             state,
+//             city,
+//             medical_licence_number: medicalLicenceNumber,
+//             medical_licence_date: medicalLicenceDate,
+//             dea_number: deaNumber,
+//             dea_expiry_date: deaExpiryDate,
+//             cds_number: cdsNumber,
+//             cds_expiry_date: cdsExpiryDate,
+//             npi_number: npiNumber,
+//             adminId: req.user.userId,
+//             role:2
+//         };
+
+//         let response;
+//         if (_id) {
+//             response = await USER.findByIdAndUpdate(_id, physicianData, { new: true });
+//             console.log(response);
+
+//             if (!response) {
+//                 return responseHandler.responseSend(404, 'Physician not found.', null);
+//             }
+
+//             return responseHandler.responseSend(200, 'Physician updated successfully.', response);
+//         } else {
+//             response = new USER(physicianData);
+//             await response.save();
+
+//             let payload = {
+//                 _id: response._id,
+//                 role: response.role
+//             };
+//             let newHost = 'http://159.203.100.155'
+
+//             let generateToken = await generateJWTToken(payload, "2h");
+//             let setUpProfileLine = `${newHost}/setup-profile?token=${generateToken}`;
+
+//             const emailTemplate = `
+//                 <p>Dear ${firstName},</p>
+//                 <p>You have been added as a physician.</p>
+//                 <p>Please click the link below to set up your profile:</p>
+//                 <a href="${setUpProfileLine}" style="display: inline-block; 
+//                    padding: 10px 20px; 
+//                    font-size: 16px; 
+//                    color: #ffffff; 
+//                    background-color: #007bff; 
+//                    text-decoration: none; 
+//                    border-radius: 5px;">Set Up Profile</a>
+//                 <p>Best regards,</p>
+//                 <p>Your Team</p>
+//             `;
+
+//             await sendEmail(response.email, emailTemplate); // Send email
+
+//             return responseHandler.responseSend(201, 'Physician added successfully.', response);
+//         }
+//     } catch (error) {
+//         console.error(error);
+//         return responseHandler.responseSend(500, 'An error occurred while processing your request.', null, error.message);
+//     }
+// }
+
 async function addUpdatePhyscians(req, res) {
     const responseHandler = new FunctoryFunctions(res); // Instantiate FunctoryFunctions
 
@@ -15,23 +114,27 @@ async function addUpdatePhyscians(req, res) {
         email,
         phone,
         dob,
-        addressStreet1,
-        addressStreet2,
-        zipCode,
-        country,
-        state,
-        city,
-        medicalLicenceNumber,
-        medicalLicenceDate,
-        deaNumber,
-        deaExpiryDate,
-        cdsNumber,
-        cdsExpiryDate,
-        npiNumber,
+        addressStreet1 = "", // Default to empty string if not provided
+        addressStreet2 = "", // Default to empty string if not provided
+        zipCode = "", // Default to empty string if not provided
+        country = null, // Change to null if not provided
+        state = null, // Change to null if not provided
+        city = null, // Change to null if not provided
+        medicalLicenceNumber = "", // Default to empty string if not provided
+        medicalLicenceDate = "", // Default to empty string if not provided
+        deaNumber = "", // Default to empty string if not provided
+        deaExpiryDate = "", // Default to empty string if not provided
+        cdsNumber = "", // Default to empty string if not provided
+        cdsExpiryDate = "", // Default to empty string if not provided
+        npiNumber = "", // Default to empty string if not provided
         _id
     } = req.body;
 
-    console.log(req.body);
+    let checkUserExist = await USER.findOne({email:email.toLowerCase()});
+    if(checkUserExist){
+    return responseHandler.responseSend(200, 'User already Exist with this email', null, []);
+
+    }
 
     try {
         const physicianData = {
@@ -39,13 +142,13 @@ async function addUpdatePhyscians(req, res) {
             lastName,
             email,
             phone,
-            dob: new Date(dob),
+            dob: dob ? new Date(dob) : null,
             address_street1: addressStreet1,
             address_street2: addressStreet2,
             zip_code: zipCode,
-            country,
-            state,
-            city,
+            country:null, // Allow null if not provided
+            state:null, // Allow null if not provided
+            city:null,// Allow null if not provided
             medical_licence_number: medicalLicenceNumber,
             medical_licence_date: medicalLicenceDate,
             dea_number: deaNumber,
@@ -54,7 +157,7 @@ async function addUpdatePhyscians(req, res) {
             cds_expiry_date: cdsExpiryDate,
             npi_number: npiNumber,
             adminId: req.user.userId,
-            role:2
+            role: 2
         };
 
         let response;
@@ -75,7 +178,7 @@ async function addUpdatePhyscians(req, res) {
                 _id: response._id,
                 role: response.role
             };
-            let newHost = 'http://159.203.100.155'
+            let newHost = 'http://159.203.100.155';
 
             let generateToken = await generateJWTToken(payload, "2h");
             let setUpProfileLine = `${newHost}/setup-profile?token=${generateToken}`;
@@ -105,29 +208,33 @@ async function addUpdatePhyscians(req, res) {
     }
 }
 
+
+
 async function listPhysicians(req, res) {
     const responseHandler = new FunctoryFunctions(res); 
 
     try {
         const currentUser = await req.user;
-        let matchCondition
+        let matchCondition;
         const options = {
             page: parseInt(req.query.page) || 1,
             limit: parseInt(req.query.limit) || 10,
         };
         const searchQuery = req.query.search ? req.query.search.trim() : '';
-        if(req.user.role == 0){
+
+        if (req.user.role == 0) {
             matchCondition = {
                 isDeleted: false,
-                role:2
+                role: 2
             };
-        }else{
+        } else {
             matchCondition = {
                 isDeleted: false,
                 adminId: currentUser.userId,
-                role:2
+                role: 2
             };
         }
+
         if (searchQuery) {
             matchCondition.$or = [
                 { firstName: { $regex: searchQuery, $options: 'i' } },
@@ -140,39 +247,47 @@ async function listPhysicians(req, res) {
         const myAggregate = USER.aggregate([
             { $match: matchCondition },
             {
-                $lookup:{
-                    from:"countries",
-                    localField:"country",
-                    foreignField:"_id",
-                    as :"country"
+                $lookup: {
+                    from: "countries",
+                    localField: "country",
+                    foreignField: "_id",
+                    as: "country"
                 }
             },
             {
-                $unwind:"$country"
-            },
-            {
-                $lookup:{
-                    from:"states",
-                    localField:"state",
-                    foreignField:"_id",
-                    as :"state"
+                $unwind: {
+                    path: "$country",
+                    preserveNullAndEmptyArrays: true // Preserve documents with null country
                 }
             },
             {
-                $unwind:"$state"
-            },
-            {
-                $lookup:{
-                    from:"cities",
-                    localField:"city",
-                    foreignField:"_id",
-                    as :"city"
+                $lookup: {
+                    from: "states",
+                    localField: "state",
+                    foreignField: "_id",
+                    as: "state"
                 }
             },
             {
-                $unwind:"$city"
+                $unwind: {
+                    path: "$state",
+                    preserveNullAndEmptyArrays: true // Preserve documents with null state
+                }
             },
-
+            {
+                $lookup: {
+                    from: "cities",
+                    localField: "city",
+                    foreignField: "_id",
+                    as: "city"
+                }
+            },
+            {
+                $unwind: {
+                    path: "$city",
+                    preserveNullAndEmptyArrays: true // Preserve documents with null city
+                }
+            },
             { $sort: { createdAt: -1 } }
         ]);
 
@@ -184,6 +299,7 @@ async function listPhysicians(req, res) {
         return responseHandler.responseSend(500, "Internal Server Error", null, err.message);
     }
 }
+
 
 
 async function addAdminStaff(req, res) {
@@ -204,6 +320,13 @@ async function addAdminStaff(req, res) {
     } = req.body;
 
     try {
+
+        let checkUserExist = await USER.findOne({email:email.toLowerCase()});
+        if(checkUserExist){
+        return responseHandler.responseSend(200, 'User already Exist with this email', null, []);
+
+        }
+
         const staffData = {
             firstName,
             lastName,
@@ -219,6 +342,7 @@ async function addAdminStaff(req, res) {
             adminId: req.user.userId,
             role: 7
         };
+
 
         // Create a new staff member
         const newStaff = new USER(staffData);

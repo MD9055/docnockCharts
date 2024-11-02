@@ -189,7 +189,19 @@ const userSchema = new mongoose.Schema({
    },
    companyName:{
     type:String
+   },
+   omrSheet:{
+    type:String
+   },
+   emailChangeAttempt:{
+    type:Number,
+    default:0
+   },
+
+   emailChangeAttemptTimeStamp:{
+    type:Date
    }
+
 
 
 
